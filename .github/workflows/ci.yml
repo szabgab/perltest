@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+#  schedule:
+#    - cron: '42 5 * * *'
+
+jobs:
+  build-in-container:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version:
+          - '5.32'
+          - '5.30'
+          - '5.20'
+
+    container:
+      image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
+
+    name: Build on Linux with Perl ${{ matrix.perl-version }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Regular tests
+        run: |
+            perl -v
+            perl perltest.pl
