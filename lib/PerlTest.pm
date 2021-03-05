@@ -28,26 +28,23 @@ sub ok($;$) {
 }
 
 sub runtests {
-    my @pairs = collect();
+    my $modules = collect();
     #say Dumper \@pairs;
-    for my $pair (@pairs) {
-        my ($namespace, $tests) = @$pair;
-        run($namespace, $tests);
+    for my $namespace (sort keys %$modules) {
+        run($namespace, $modules->{$namespace});
     }
     done_testing();
 }
 
 
 sub run {
-    my ($namespace, $tests) = @_;
-    #say $namespace;
-    #say Dumper $tests;
+    my ($namespace, $details) = @_;
 
     my $obj;
     if ($namespace->isa('PerlTest::Base')) {
         $obj = $namespace->new;
     }
-    for my $test (sort @$tests) {
+    for my $test (sort @{ $details->{tests} }) {
         if ($namespace->isa('PerlTest::Base')) {
             $obj->$test;
         } else {
@@ -98,10 +95,11 @@ sub done_testing {
 }
 
 sub collect {
+    # TODO search recursively
     my @modules = glob 't/Test*.pm';
     my @names = map { substr(basename($_), 0, -3) } @modules;
     #print Dumper \@names;
-    my @pairs;
+    my %parsed;
     for my $filename (@names) {
         #say $filename;
         eval "use $filename";
@@ -118,9 +116,11 @@ sub collect {
         }
 
         #print Dumper \@test_functions;
-        push @pairs, [$filename, \@test_functions];
+        $parsed{$filename} = {
+            tests => \@test_functions,
+        };
     }
-    return @pairs;
+    return \%parsed;
 }
 
 
