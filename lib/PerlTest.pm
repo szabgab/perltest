@@ -52,12 +52,44 @@ sub run {
             $obj->$test;
         } else {
             my $func = "${namespace}::${test}";
+            my $sigs = get_signature(\&$func);
+            #print Dumper $sigs;
             no strict 'refs';
-            $func->();
+            my @params;
+            for my $sig (@$sigs) {
+                if ($sig eq '$tmpdir') {
+                    use File::Temp qw(tempdir);
+                    my $dir = tempdir( CLEANUP => 1 );
+                    push @params, $dir;
+                }
+            }
+            $func->(@params);
         }
     }
-
 }
+
+# Based on https://stackoverflow.com/questions/63836449/how-do-i-get-the-signature-of-a-subroutine-in-runtime
+sub get_signature {
+    my ($code) = @_;
+
+    use B::Deparse;
+    my $source = B::Deparse->new->coderef2text($code);
+    #print $source;
+
+    my @source = split /\n/, $source;
+    #if ($source[2] =~ /use feature 'signatures'/ &&
+    #        $source[3] =~ /Too many arguments/ &&
+    #        $source[4] =~ /Too few arguments/) {
+    my @signature = ();
+    for my $row (@source) {
+        my ($sig) = $row =~ /my (\W\w+) = /;
+        push @signature, $sig if $sig;
+    }
+    #return "Signature is (", join(",",@signature), ")\n";
+    return \@signature;
+    die 'Could not get the signature';
+}
+
 
 sub done_testing {
     my $ctx = context();
