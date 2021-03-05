@@ -5,8 +5,27 @@ use 5.010;
 
 use Data::Dumper qw(Dumper);
 use File::Basename qw(basename);
+use Exporter qw(import);
+use Test2::API qw(context);
 
 use lib 't';
+
+our @EXPORT = qw(ok diag);
+
+sub diag ($) {
+    my ($text) = @_;
+    my $ctx = context();
+    $ctx->diag($text);
+    $ctx->release;
+}
+
+sub ok($;$) {
+    my ($bool, $name) = @_;
+    my $ctx = context();
+    $ctx->ok($bool, $name);
+    $ctx->release;
+    return $bool;
+}
 
 sub runtests {
     my @pairs = collect();
