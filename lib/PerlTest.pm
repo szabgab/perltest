@@ -34,6 +34,7 @@ sub runtests {
         my ($namespace, $tests) = @$pair;
         run($namespace, $tests);
     }
+    done_testing();
 }
 
 
@@ -55,6 +56,13 @@ sub run {
             $func->();
         }
     }
+
+}
+
+sub done_testing {
+    my $ctx = context();
+    $ctx->done_testing;
+    $ctx->release;
 }
 
 sub collect {
