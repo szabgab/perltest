@@ -28,4 +28,4 @@ jobs:
       - name: Regular tests
         run: |
             perl -v
-            perl perltest.pl
+            ./bin/perltest
