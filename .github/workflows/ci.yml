@@ -28,5 +28,5 @@ jobs:
       - name: Regular tests
         run: |
             perl -v
-            ./bin/perltest
+            perl -I lib bin/perltest
             prove -l
