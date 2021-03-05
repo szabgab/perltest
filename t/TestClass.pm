@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 
-use base 'PerlTestBase';
+use base 'PerlTest::Base';
 
 sub test_me {
     my ($self) = @_;

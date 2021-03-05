@@ -1,4 +1,4 @@
-package PerlTestBase;
+package PerlTest::Base;
 use strict;
 use warnings;
 

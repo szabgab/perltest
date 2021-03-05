@@ -24,11 +24,11 @@ sub run {
     #say Dumper $tests;
 
     my $obj;
-    if ($namespace->isa('PerlTestBase')) {
+    if ($namespace->isa('PerlTest::Base')) {
         $obj = $namespace->new;
     }
     for my $test (sort @$tests) {
-        if ($namespace->isa('PerlTestBase')) {
+        if ($namespace->isa('PerlTest::Base')) {
             $obj->$test;
         } else {
             my $func = "${namespace}::${test}";
