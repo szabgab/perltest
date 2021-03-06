@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+our $VERSION = '0.01';
+
 use Data::Dumper qw(Dumper);
 use File::Basename qw(basename);
 use Exporter qw(import);
@@ -123,6 +125,22 @@ sub collect {
     return \%parsed;
 }
 
-
 1;
+
+=head1 NAME
+
+PerlTest - a testing library for perl similar to pytest
+
+=head1 SYNOPSIS
+
+For exameplslook in the t/ directory.
+
+=head1 LICENCE
+
+Copyright 2021 Gabor Szabo, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
 
