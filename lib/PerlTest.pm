@@ -62,6 +62,8 @@ sub run {
                 #say "sig: $sig";
                 if ($fixtures->{$sig}) {
                     push @params, $fixtures->{$sig}->new();
+                } else {
+                    die "Cannot find fixture '$sig'\n";
                 }
             }
             #print "params: '@params'\n";
