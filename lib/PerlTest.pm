@@ -30,17 +30,20 @@ sub ok($;$) {
 }
 
 sub runtests {
+    my $fixtures = get_fixtures();
+    #say Dumper $fixtures;
     my $modules = collect();
     #say Dumper \@pairs;
     for my $namespace (sort keys %$modules) {
-        run($namespace, $modules->{$namespace});
+        run($namespace, $modules->{$namespace}, $fixtures);
     }
     done_testing();
 }
 
 
 sub run {
-    my ($namespace, $details) = @_;
+    my ($namespace, $details, $fixtures) = @_;
+    #say $namespace;
 
     my $obj;
     if ($namespace->isa('PerlTest::Base')) {
@@ -56,12 +59,12 @@ sub run {
             no strict 'refs';
             my @params;
             for my $sig (@$sigs) {
-                if ($sig eq '$tmpdir') {
-                    use File::Temp qw(tempdir);
-                    my $dir = tempdir( CLEANUP => 1 );
-                    push @params, $dir;
+                #say "sig: $sig";
+                if ($fixtures->{$sig}) {
+                    push @params, $fixtures->{$sig}->new();
                 }
             }
+            #print "params: '@params'\n";
             $func->(@params);
         }
     }
@@ -123,6 +126,27 @@ sub collect {
         };
     }
     return \%parsed;
+}
+
+sub get_fixtures {
+    my %fixtures;
+    my @modules = glob 't/Fixture*.pm';
+    my @names = map { substr(basename($_), 0, -3) } @modules;
+    #print Dumper \@names;
+    for my $filename (@names) {
+        #say $filename;
+        eval "use $filename";
+        die $@ if $@;
+        #print Dumper \%INC;
+
+        my $var = "${filename}::NAME";
+        no strict 'refs';
+        my $name = $$var;
+        #say "$var = $name";
+        die "$name was already defined as $fixtures{$name}" if exists $fixtures{$name};
+        $fixtures{$name} = $filename;
+    }
+    return \%fixtures;
 }
 
 1;
