@@ -7,16 +7,20 @@ use Path::Tiny qw(path);
 use File::Spec;
 
 
-for my $dir (qw(a)) {
+opendir my $dh, 'eg';
+my @dirs = grep { $_ ne '.' and $_ ne '..' } readdir $dh;
+close $dh;
+
+for my $dir (@dirs) {
     chdir File::Spec->catdir('eg', $dir);
     my ($out, $err, $exit) = capture {
         system "$^X -I../../lib perltest.t";
     };
-    is $exit, 0;
+    is $exit, 0, "exit for $dir";
     my $expected_out = path('expected.out')->slurp_utf8;
-    is $out, $expected_out;
+    is $out, $expected_out, "STDOUT for $dir";
     my $expected_err = path('expected.err')->slurp_utf8;
-    is $err, $expected_err;
+    is $err, $expected_err, "STDERR for $dir";
     chdir '../..';
 }
 
