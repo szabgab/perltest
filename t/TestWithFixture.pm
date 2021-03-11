@@ -2,12 +2,12 @@ package TestWithFixture;
 use strict;
 use warnings;
 use 5.010;
-use feature 'signatures';
-no warnings 'experimental::signatures';
 
 use PerlTest;
+use FixtureDataBase;
 
-sub test_database($database) {
+sub test_database {
+    my $database = FixtureDataBase->new;
     diag 'test_database';
     ok __PACKAGE__ eq 'TestWithFixture', 'package is correct';
     # use the $database

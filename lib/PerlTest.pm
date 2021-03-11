@@ -30,19 +30,17 @@ sub ok($;$) {
 }
 
 sub runtests {
-    my $fixtures = get_fixtures();
-    #say Dumper $fixtures;
     my $modules = collect();
     #say Dumper \@pairs;
     for my $namespace (sort keys %$modules) {
-        run($namespace, $modules->{$namespace}, $fixtures);
+        run($namespace, $modules->{$namespace});
     }
     done_testing();
 }
 
 
 sub run {
-    my ($namespace, $details, $fixtures) = @_;
+    my ($namespace, $details) = @_;
     #say $namespace;
 
     my $obj;
@@ -54,44 +52,11 @@ sub run {
             $obj->$test;
         } else {
             my $func = "${namespace}::${test}";
-            my $sigs = get_signature(\&$func);
-            #print Dumper $sigs;
-            no strict 'refs';
-            my @params;
-            for my $sig (@$sigs) {
-                #say "sig: $sig";
-                if ($fixtures->{$sig}) {
-                    push @params, $fixtures->{$sig}->new();
-                } else {
-                    die "Cannot find fixture '$sig'\n";
-                }
-            }
             #print "params: '@params'\n";
-            $func->(@params);
+            no strict 'refs';
+            $func->();
         }
     }
-}
-
-# Based on https://stackoverflow.com/questions/63836449/how-do-i-get-the-signature-of-a-subroutine-in-runtime
-sub get_signature {
-    my ($code) = @_;
-
-    use B::Deparse;
-    my $source = B::Deparse->new->coderef2text($code);
-    #print $source;
-
-    my @source = split /\n/, $source;
-    #if ($source[2] =~ /use feature 'signatures'/ &&
-    #        $source[3] =~ /Too many arguments/ &&
-    #        $source[4] =~ /Too few arguments/) {
-    my @signature = ();
-    for my $row (@source) {
-        my ($sig) = $row =~ /my (\W\w+) = /;
-        push @signature, $sig if $sig;
-    }
-    #return "Signature is (", join(",",@signature), ")\n";
-    return \@signature;
-    die 'Could not get the signature';
 }
 
 
@@ -128,27 +93,6 @@ sub collect {
         };
     }
     return \%parsed;
-}
-
-sub get_fixtures {
-    my %fixtures;
-    my @modules = glob 't/Fixture*.pm';
-    my @names = map { substr(basename($_), 0, -3) } @modules;
-    #print Dumper \@names;
-    for my $filename (@names) {
-        #say $filename;
-        eval "use $filename";
-        die $@ if $@;
-        #print Dumper \%INC;
-
-        my $var = "${filename}::NAME";
-        no strict 'refs';
-        my $name = $$var;
-        #say "$var = $name";
-        die "$name was already defined as $fixtures{$name}" if exists $fixtures{$name};
-        $fixtures{$name} = $filename;
-    }
-    return \%fixtures;
 }
 
 1;
