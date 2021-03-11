@@ -17,6 +17,7 @@ jobs:
           - '5.32'
           - '5.30'
           - '5.20'
+          - '5.10'
 
     container:
       image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
@@ -30,3 +31,6 @@ jobs:
             perl -v
             perl -I lib bin/perltest
             prove -l
+            perl Makefile.PL
+            make
+            make test
