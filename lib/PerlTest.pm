@@ -38,6 +38,14 @@ sub runtests {
     done_testing();
 }
 
+sub run_fixture {
+    my ($namespace, $mode) = @_;
+    no strict 'refs';
+    if (exists ${"${namespace}::"}{$mode}) {
+        my $func = "${namespace}::${mode}";
+        $func->();
+    }
+}
 
 sub run {
     my ($namespace, $details) = @_;
@@ -47,16 +55,23 @@ sub run {
     if ($namespace->isa('PerlTest::Base')) {
         $obj = $namespace->new;
     }
+
+    run_fixture($namespace, 'setup_module');
+
     for my $test (sort @{ $details->{tests} }) {
         if ($namespace->isa('PerlTest::Base')) {
             $obj->$test;
         } else {
+            run_fixture($namespace, 'setup_function');
             my $func = "${namespace}::${test}";
             #print "params: '@params'\n";
             no strict 'refs';
             $func->();
+            run_fixture($namespace, 'teardown_function');
         }
     }
+
+    run_fixture($namespace, 'teardown_module');
 }
 
 
