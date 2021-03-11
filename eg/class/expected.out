@@ -1,0 +1,7 @@
+ok 1 - package is correct
+ok 2
+ok 3 - one parameter passed
+ok 4 - package is correct
+ok 5
+ok 6 - one parameter passed
+1..6
