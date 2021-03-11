@@ -1,19 +1,17 @@
-package FixtureDataBase;
+package FixtureDemo;
 use strict;
 use warnings;
 use 5.010;
 
-our $NAME = '$database';
-
 sub new {
     my ($class) = @_;
-    say 'set up database, return object represnting it.';
+    say 'setup part of the FixtureDemo';
     return bless {}, $class;
 }
 
 DESTROY {
     my ($self) = @_;
-    say 'remove database';
+    say 'teardown part of the FixtureDemo';
 }
 
 1;

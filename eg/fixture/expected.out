@@ -1,0 +1,7 @@
+setup part of the FixtureDemo
+ok 1 - package is correct
+teardown part of the FixtureDemo
+setup part of the FixtureDemo
+not ok 2 - failure
+teardown part of the FixtureDemo
+1..2

@@ -14,9 +14,12 @@ close $dh;
 for my $dir (@dirs) {
     chdir File::Spec->catdir('eg', $dir);
     my ($out, $err, $exit) = capture {
-        system "$^X -I../../lib perltest.t";
+        system "$^X -I../../lib t/perltest.t";
     };
-    is $exit, 0, "exit for $dir";
+    $exit /= 256;
+    my $expected_exit = path('expected.exit')->slurp_utf8;
+    chomp $expected_exit;
+    is $exit, $expected_exit, "exit for $dir";
     my $expected_out = path('expected.out')->slurp_utf8;
     is $out, $expected_out, "STDOUT for $dir";
     my $expected_err = path('expected.err')->slurp_utf8;
