@@ -23,3 +23,7 @@ Add
 
 * Maybe we can simplify the writing of test so we won't need to write packages?
 
+* Selectively running the test functions
+* verbose mode print the test functions
+* catch exceptions in test function and keep  running
+
