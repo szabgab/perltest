@@ -1,2 +1,8 @@
+# setup_class: TestClass
+# setup_method TestClass
 # test_me
+# teardown_method TestClass
+# setup_method TestClass
 # test_them
+# teardown_method TestClass
+# teardown_class: TestClass

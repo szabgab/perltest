@@ -47,6 +47,15 @@ sub run_fixture {
     }
 }
 
+sub run_oop_fixture {
+    my ($namespace, $obj, $mode) = @_;
+    no strict 'refs';
+    if (exists ${"${namespace}::"}{$mode}) {
+        $obj->$mode;
+    }
+}
+
+
 sub run {
     my ($namespace, $details) = @_;
     #say $namespace;
@@ -54,13 +63,16 @@ sub run {
     my $obj;
     if ($namespace->isa('PerlTest::Base')) {
         $obj = $namespace->new;
+        run_oop_fixture($namespace, $obj, 'setup_class');
     } else {
         run_fixture($namespace, 'setup_module');
     }
 
     for my $test (sort @{ $details->{tests} }) {
         if ($namespace->isa('PerlTest::Base')) {
+            run_oop_fixture($namespace, $obj, 'setup_method');
             $obj->$test;
+            run_oop_fixture($namespace, $obj, 'teardown_method');
         } else {
             run_fixture($namespace, 'setup_function');
             my $func = "${namespace}::${test}";
@@ -72,6 +84,7 @@ sub run {
     }
 
     if ($namespace->isa('PerlTest::Base')) {
+        run_oop_fixture($namespace, $obj, 'teardown_class');
     } else {
         run_fixture($namespace, 'teardown_module');
     }
@@ -180,6 +193,26 @@ Runs once after every test function.
 =back
 
 Object Orinted test writing, see the C<eg/class> directory.
+
+=over 4
+
+=item setup_class
+
+Runs once before any of test methods.
+
+=item teardown_class
+
+Runs once after all the test methods were executed.
+
+=item setup_method
+
+Runs once before evey test method.
+
+=item teardown_method
+
+Runs once after every test method
+
+=back
 
 
 =head1 LICENCE

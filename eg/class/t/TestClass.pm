@@ -22,6 +22,26 @@ sub teardown_function {
     diag 'teardown_function';
 }
 
+sub setup_class {
+    my ($self) = @_;
+    diag 'setup_class: ' . ref($self);
+}
+
+sub teardown_class {
+    my ($self) = @_;
+    diag 'teardown_class: ' . ref($self);
+}
+
+sub setup_method {
+    my ($self) = @_;
+    diag 'setup_method ' . ref($self);
+}
+
+sub teardown_method {
+    my ($self) = @_;
+    diag 'teardown_method ' . ref($self);
+}
+
 
 sub test_me {
     my ($self) = @_;
