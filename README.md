@@ -10,11 +10,6 @@ that only runs this code.
 
 Add
 
-* setup_module
-* teardown_module
-* setup_function
-* teardown_function
-
 * dependency injection - we won't provide it for now as in Perl we can solve this in a nice way using classes and destructors.
 
 * allow for "inline tests" that we write directly in the .t file and in calls `self_run`  or `run_this`

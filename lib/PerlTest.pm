@@ -54,9 +54,9 @@ sub run {
     my $obj;
     if ($namespace->isa('PerlTest::Base')) {
         $obj = $namespace->new;
+    } else {
+        run_fixture($namespace, 'setup_module');
     }
-
-    run_fixture($namespace, 'setup_module');
 
     for my $test (sort @{ $details->{tests} }) {
         if ($namespace->isa('PerlTest::Base')) {
@@ -71,7 +71,10 @@ sub run {
         }
     }
 
-    run_fixture($namespace, 'teardown_module');
+    if ($namespace->isa('PerlTest::Base')) {
+    } else {
+        run_fixture($namespace, 'teardown_module');
+    }
 }
 
 
@@ -114,11 +117,70 @@ sub collect {
 
 =head1 NAME
 
-PerlTest - a testing library for perl similar to pytest
+PerlTest - a testing library for Perl that provide xUnit and other fixture capabilities
 
 =head1 SYNOPSIS
 
-For exameplslook in the t/ directory.
+Create a tests script in the t/ directory with the following content:
+
+    use strict;
+    use warnings;
+    use PerlTest;
+    PerlTest::runtests();
+
+Then each test file is going to me a module called that has a name starting with the word Test e.g.: t/TestSimple.pm
+
+    package TestSimple;
+    use strict;
+    use warnings;
+
+    use PerlTest;
+
+    sub test_me {
+        diag 'test_me';
+        ok __PACKAGE__ eq 'TestSimple', 'package is correct';
+    }
+
+    sub test_them {
+        diag 'test_them';
+        ok __PACKAGE__ eq 'TestSimple', 'package is correct';
+        ok not(@_), 'no parameters passed';
+    }
+
+    1;
+
+When running `prove` it will run each one of the test functions, that is each function that has a prefix test_.
+
+=head1 EXAMPLES
+
+In order to see examples visit the `eg` folder of the L<GitHub repository|https://github.com/szabgab/PerlTest> of the project.
+
+Probably the simplest test-case is in the C<eg/plain> directory.
+
+xUnit style fixtures in C<eg/xunit>:
+
+=over 4
+
+=item setup_module
+
+Runs once before any of test function.
+
+=item teardown_module
+
+Runs once after all the test functions were executed.
+
+=item setup_function
+
+Runs once before evey test function.
+
+=item teardown_function
+
+Runs once after every test function.
+
+=back
+
+Object Orinted test writing, see the C<eg/class> directory.
+
 
 =head1 LICENCE
 
